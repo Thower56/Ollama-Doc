@@ -73,15 +73,17 @@ Le chunking est une technique en traitement du langage naturel (NLP) qui consist
 
 #### Chunking Ids
 Chaque chunk peut être identifié par un ID de chunk, qui sert à référencer ou à étiqueter ces segments de manière unique et cohérente.
-
+```{insert code example here}```
 #### Chunking a la BD (SQLlite)
-
+```{insert code example here}```
 ## Comment l'utiliser
-
+```{insert code example here}```
 ## Chroma
 Chroma est une bibliothèque ou un outil souvent utilisé en traitement du langage naturel (NLP) et en machine learning pour la gestion et la manipulation de vecteurs d'embeddings. Les embeddings sont des représentations vectorielles de données (comme des mots, des phrases, ou des documents) qui capturent les relations sémantiques entre ces données.
+```{insert code example here}```
 
 ## Qu'est-ce qu'un rag?
 RAG (Retrieval-Augmented Generation) est une technique en traitement du langage naturel (NLP) qui combine la génération de texte avec la récupération d'informations à partir d'une base de données ou d'une source de connaissances externe. Cette méthode améliore la qualité et la précision des réponses générées par des modèles de langage.
+```{insert code example here}```
 
 Le RAG avec Ollama permet de créer des systèmes de question-réponse puissants et précis en combinant la récupération d'informations pertinentes avec la génération de texte enrichi par des modèles de langage. Cette technique tire parti des forces de chaque composant pour fournir des réponses de haute qualité et pertinentes, en utilisant efficacement les capacités locales de Ollama pour exécuter des modèles LLM.
