@@ -21,7 +21,7 @@ Ollama est une application développée en Go ( Golang, est un langage de progra
 
 En résumé, Ollama est une solution pratique et efficace pour utiliser des modèles LLM en local, offrant simplicité, contrôle et sécurité.
 
-## Terme important
+## Point important
 
 ### LangChain
 LangChain est un cadre open source conçu pour faciliter la création d'applications basées sur de grands modèles de langage (LLM). Voici un aperçu de ses fonctionnalités et avantages :
