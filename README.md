@@ -1,7 +1,7 @@
 # Ollama
 
 ## Qu'est-ce qu ollama
-Ollama est une application développée en Go, basée sur llama.cpp, qui simplifie l'utilisation des modèles de langage (LLM) sur une machine locale. Voici comment Ollama fonctionne et ses principaux avantages :
+Ollama est une application développée en Go ( Golang, est un langage de programmation open-source développé par Google ), basée sur llama.cpp, qui simplifie l'utilisation des modèles de langage (LLM) sur une machine locale. Voici comment Ollama fonctionne et ses principaux avantages :
 
 **Facilité d'utilisation** : Ollama rend l'acquisition et l'exécution des modèles LLM très simples. Il adapte automatiquement les prompts (les questions ou les textes d'entrée) au format attendu par chaque modèle et charge les modèles à la demande avec des commandes très simples.
 
