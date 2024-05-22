@@ -94,9 +94,10 @@ response = retrieval_chain.invoke({"input": "how can langsmith help with testing
 print(response["answer"])
 ```
 
-**Accès à de nouveaux jeux de données** : LangChain inclut des composants qui permettent aux LLM d'accéder à de nouveaux jeux de données sans nécessiter un nouvel entraînement. Cela signifie que les modèles peuvent utiliser des informations actualisées ou spécifiques sans devoir être réentraînés, ce qui économise du temps et des ressources.
+**Accès à de nouvelle données** : LangChain inclut des composants qui permettent aux LLM d'accéder à de nouvelle données sans nécessiter un nouvel entraînement. Cela signifie que les modèles peuvent utiliser des informations actualisées ou spécifiques sans devoir être réentraînés, ce qui économise du temps et des ressources.
 
 En résumé, LangChain est un outil puissant et flexible pour développer des applications basées sur de grands modèles de langage, offrant des moyens innovants de personnaliser et d'améliorer les performances des modèles sans nécessiter de réentraînement complet.
+
 ### Embeddings
 Les embeddings sont une technique utilisée en intelligence artificielle et en traitement du langage naturel pour représenter des données sous forme de vecteurs de nombres réels dans un espace de dimension inférieure. Voici une explication détaillée de ce concept :
 
