@@ -31,6 +31,71 @@ LangChain est un cadre open source conçu pour faciliter la création d'applicat
 **Outils et abstractions** : LangChain offre des outils et des abstractions pour améliorer la personnalisation, la précision et la pertinence des informations générées par les modèles. Cela permet aux développeurs de créer des applications plus sophistiquées et adaptées aux besoins spécifiques des utilisateurs.
 
 **Création et personnalisation** : Avec LangChain, les développeurs peuvent facilement créer de nouvelles chaînes d'instructions ou personnaliser des modèles existants. Cela permet de tirer le meilleur parti des capacités des LLM pour diverses applications.
+### Dependance
+```
+```
+
+### Le plus simple possible
+```
+# Faire de appel API Ollama simple, prend le CPU et est VRAIMENT lent
+# -------------------------------------------------------------------
+from langchain_community.llms import Ollama
+from langchain_core.prompts import ChatPromptTemplate ## Custom Prompt
+from langchain_core.output_parsers import StrOutputParser ## Transformer en String
+llm = Ollama(model="llama3")
+
+output_parser = StrOutputParser() ## Transforme le message de chat en string
+
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "You are a world class technical documentation writer."),
+    ("user", "{input}")
+]) ## Guide pour manipuler la facon donc Ai reponds
+
+chain = prompt | llm | output_parser ## Creation de la chain de commande
+
+answer = chain.invoke({"input":"How can langsmith help with testing?"}) ## appel API de Ollama
+
+print(answer)
+# --------------------------------------------------------------------
+```
+
+### Faire des recherches sur le Net
+```
+from langchain_community.llms import Ollama
+from langchain_core.prompts import ChatPromptTemplate ## Custom Prompt
+from langchain_community.document_loaders import WebBaseLoader ## Charger une page internet pour interoger
+from langchain_community.embeddings import OllamaEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains import create_retrieval_chain
+
+embeddings = OllamaEmbeddings()
+llm = Ollama(model="llama3")
+loader = WebBaseLoader("https://docs.smith.langchain.com/user_guide") # Charge la page
+docs = loader.load()
+
+
+text_splitter = RecursiveCharacterTextSplitter() # Separe le text en petit portion
+documents = text_splitter.split_documents(docs) # variable pour sauvegarder la liste de portion
+vector = FAISS.from_documents(documents, embeddings) # garde le tout dans un vector pour l'AI
+
+prompt = ChatPromptTemplate.from_template("""Answer the following question based only on the provided context:
+
+<context>
+{context}
+</context>
+
+Question: {input}""") # custom prompt
+
+document_chain = create_stuff_documents_chain(llm, prompt) # Creation de la chain d'instruction
+
+retriever = vector.as_retriever() # va chercher les infos pour l'AI
+retrieval_chain = create_retrieval_chain(retriever,document_chain) # On met tout ensemble
+
+response = retrieval_chain.invoke({"input": "how can langsmith help with testing?"}) # Appel API
+print(response["answer"])
+```
 
 **Accès à de nouveaux jeux de données** : LangChain inclut des composants qui permettent aux LLM d'accéder à de nouveaux jeux de données sans nécessiter un nouvel entraînement. Cela signifie que les modèles peuvent utiliser des informations actualisées ou spécifiques sans devoir être réentraînés, ce qui économise du temps et des ressources.
 
