@@ -31,9 +31,6 @@ LangChain est un cadre open source conçu pour faciliter la création d'applicat
 **Outils et abstractions** : LangChain offre des outils et des abstractions pour améliorer la personnalisation, la précision et la pertinence des informations générées par les modèles. Cela permet aux développeurs de créer des applications plus sophistiquées et adaptées aux besoins spécifiques des utilisateurs.
 
 **Création et personnalisation** : Avec LangChain, les développeurs peuvent facilement créer de nouvelles chaînes d'instructions ou personnaliser des modèles existants. Cela permet de tirer le meilleur parti des capacités des LLM pour diverses applications.
-### Dependance
-```
-```
 
 ### Le plus simple possible
 ```
@@ -138,17 +135,107 @@ Le chunking est une technique en traitement du langage naturel (NLP) qui consist
 
 #### Chunking Ids
 Chaque chunk peut être identifié par un ID de chunk, qui sert à référencer ou à étiqueter ces segments de manière unique et cohérente.
-```{insert code example here}```
+```
+def calculate_chunk_ids(chunks):
+
+    # This will create IDs like "data/monopoly.pdf:6:2"
+    # Page Source : Page Number : Chunk Index
+
+    last_page_id = None
+    current_chunk_index = 0
+
+    for chunk in chunks:
+        source = chunk.metadata.get("source")
+        page = chunk.metadata.get("page")
+        current_page_id = f"{source}:{page}"
+
+        # If the page ID is the same as the last one, increment the index.
+        if current_page_id == last_page_id:
+            current_chunk_index += 1
+        else:
+            current_chunk_index = 0
+
+        # Calculate the chunk ID.
+        chunk_id = f"{current_page_id}:{current_chunk_index}"
+        last_page_id = current_page_id
+
+        # Add it to the page meta-data.
+        chunk.metadata["id"] = chunk_id
+
+    return chunks
+```
 #### Chunking a la BD (SQLlite)
-```{insert code example here}```
+```
+def add_to_chroma(chunks: list[Document]):
+    # Load the existing database.
+    db = Chroma(
+        persist_directory=CHROMA_PATH, embedding_function=get_embedding_function()
+    )
+
+    # Calculate Page IDs.
+    chunks_with_ids = calculate_chunk_ids(chunks)
+
+    # Add or Update the documents.
+    existing_items = db.get(include=[])  # IDs are always included by default
+    existing_ids = set(existing_items["ids"])
+    print(f"Number of existing documents in DB: {len(existing_ids)}")
+
+    # Only add documents that don't exist in the DB.
+    new_chunks = []
+    for chunk in chunks_with_ids:
+        if chunk.metadata["id"] not in existing_ids:
+            new_chunks.append(chunk)
+
+    if len(new_chunks):
+        print(f"👉 Adding new documents: {len(new_chunks)}")
+        new_chunk_ids = [chunk.metadata["id"] for chunk in new_chunks]
+        db.add_documents(new_chunks, ids=new_chunk_ids)
+        db.persist()
+    else:
+        print("✅ No new documents to add")
+```
 ## Comment l'utiliser
-```{insert code example here}```
+```
+def main():
+ # Check if the database should be cleared (using the --clear flag).
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--reset", action="store_true", help="Reset the database.")
+    args = parser.parse_args()
+    if args.reset:
+        print("✨ Clearing Database")
+        clear_database()
+
+    # Create (or update) the data store.
+    documents = load_documents()
+    chunks = split_documents(documents)
+    add_to_chroma(chunks)
+```
 ## Chroma
 Chroma est une bibliothèque ou un outil souvent utilisé en traitement du langage naturel (NLP) et en machine learning pour la gestion et la manipulation de vecteurs d'embeddings. Les embeddings sont des représentations vectorielles de données (comme des mots, des phrases, ou des documents) qui capturent les relations sémantiques entre ces données.
-```{insert code example here}```
 
 ## Qu'est-ce qu'un rag?
 RAG (Retrieval-Augmented Generation) est une technique en traitement du langage naturel (NLP) qui combine la génération de texte avec la récupération d'informations à partir d'une base de données ou d'une source de connaissances externe. Cette méthode améliore la qualité et la précision des réponses générées par des modèles de langage.
-```{insert code example here}```
+```
+def query_rag(query_text: str):
+    # Prepare the DB.
+    embedding_function = get_embedding_function()
+    db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
+
+    # Search the DB.
+    results = db.similarity_search_with_score(query_text, k=5)
+
+    context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
+    prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
+    prompt = prompt_template.format(context=context_text, question=query_text)
+    # print(prompt)
+
+    model = Ollama(model="mistral")
+    response_text = model.invoke(prompt)
+
+    sources = [doc.metadata.get("id", None) for doc, _score in results]
+    formatted_response = f"Response: {response_text}\nSources: {sources}"
+    print(formatted_response)
+    return response_text
+```
 
 Le RAG avec Ollama permet de créer des systèmes de question-réponse puissants et précis en combinant la récupération d'informations pertinentes avec la génération de texte enrichi par des modèles de langage. Cette technique tire parti des forces de chaque composant pour fournir des réponses de haute qualité et pertinentes, en utilisant efficacement les capacités locales de Ollama pour exécuter des modèles LLM.
