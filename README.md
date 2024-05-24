@@ -72,12 +72,17 @@ llm = Ollama(model="llama3")
 loader = WebBaseLoader("https://docs.smith.langchain.com/user_guide") # Charge la page
 docs = loader.load()
 
+# Separe le text en petit portion
+text_splitter = RecursiveCharacterTextSplitter()
 
-text_splitter = RecursiveCharacterTextSplitter() # Separe le text en petit portion
-documents = text_splitter.split_documents(docs) # variable pour sauvegarder la liste de portion
-vector = FAISS.from_documents(documents, embeddings) # garde le tout dans un vector pour l'AI
+# variable pour sauvegarder la liste de portion
+documents = text_splitter.split_documents(docs)
 
-prompt = ChatPromptTemplate.from_template("""Answer the following question based only on the provided context:
+# garde le tout dans un vector pour l'AI
+vector = FAISS.from_documents(documents, embeddings) 
+
+prompt = ChatPromptTemplate.from_template(
+"""Answer the following question based only on the provided context:
 
 <context>
 {context}
@@ -85,12 +90,17 @@ prompt = ChatPromptTemplate.from_template("""Answer the following question based
 
 Question: {input}""") # custom prompt
 
-document_chain = create_stuff_documents_chain(llm, prompt) # Creation de la chain d'instruction
+# Creation de la chain d'instruction
+document_chain = create_stuff_documents_chain(llm, prompt)
 
-retriever = vector.as_retriever() # va chercher les infos pour l'AI
-retrieval_chain = create_retrieval_chain(retriever,document_chain) # On met tout ensemble
+# Va chercher les infos pour l'AI
+retriever = vector.as_retriever()
 
-response = retrieval_chain.invoke({"input": "how can langsmith help with testing?"}) # Appel API
+# On met tout ensemble
+retrieval_chain = create_retrieval_chain(retriever,document_chain)
+
+# Appel API
+response = retrieval_chain.invoke({"input": "how can langsmith help with testing?"}) 
 print(response["answer"])
 ```
 
